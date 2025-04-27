@@ -1,0 +1,36 @@
+version: "2.0"
+
+services:
+  postgresql:
+    image: postgis/postgis:16-3.5
+    container_name: postgresql
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  back:
+    container_name: back
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    environment:
+      POSTGRES_DSN_ASYNC: ${POSTGRES_DSN_ASYNC:-postgresql+asyncpg://uuuuu12345:ppppp11111@postgresql:5432/postgres}
+      POSTGRES_DSN: ${POSTGRES_DSN:-postgresql://uuuuu12345:ppppp11111@postgresql:5432/postgres}
+      JWT_SECRET: ${JWT_SECRET:-JWT_SECRET}
+      RESET_PASSWORD_TOKEN_SECRET: ${RESET_PASSWORD_TOKEN_SECRET:-RESET_PASSWORD_TOKEN_SECRET}
+      VERIFICATION_TOKEN_SECRET: ${VERIFICATION_TOKEN_SECRET:-VERIFICATION_TOKEN_SECRET}
+      FRONT: ${FRONT:-http://localhost:3000}
+
+
+volumes:
+  postgres_data:
