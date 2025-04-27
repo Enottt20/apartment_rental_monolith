@@ -21,8 +21,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      postgresql:
-        condition: service_healthy
+      - postgresql
     environment:
       POSTGRES_DSN_ASYNC: ${POSTGRES_DSN_ASYNC:-postgresql+asyncpg://uuuuu12345:ppppp11111@postgresql:5432/postgres}
       POSTGRES_DSN: ${POSTGRES_DSN:-postgresql://uuuuu12345:ppppp11111@postgresql:5432/postgres}
